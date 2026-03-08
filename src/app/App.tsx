@@ -2,12 +2,12 @@
  * 올리브식권 - Figma Make 미리보기용
  * Flutter 변환 참조: oliveticket-flutter-app 저장소
  *
- * ──────────────────────────────────────────────────────────────────
+ * ──────────────────────────────────────────────────────────────
  * Flutter 변환 워크플로우
- * ──────────────────────────────────────────────────────────────────
- * 1차: oliveticket-web-flutter  — Figma Make (React 웹 디자인)
+ * ──────────────────────────────────────────────────────────────
+ * 1차: oliveticket-flutter-web  — Figma Make (React 웹 디자인)
  * 2차: oliveticket-flutter-app  — Flutter Dart 실제 앱 코드
- * ──────────────────────────────────────────────────────────────────
+ * ──────────────────────────────────────────────────────────────
  */
 
 import { useState, useRef, useEffect, useCallback } from "react";
@@ -15,7 +15,7 @@ import type { ReactNode, CSSProperties } from "react";
 import {
   ShoppingCart,
   Home,
-  Receipt,
+  ScrollText,
   UserRound,
   ChevronRight,
   Bell,
@@ -25,7 +25,7 @@ import QrIcon from "../imports/QrIcon";
 import QrPaymentPage from "./components/QrPaymentPage";
 import NotificationPage from "./components/NotificationPage";
 
-// ─── Keyframes for day tap animation ─────────────────────
+// ─── Keyframes for day tap animation ─────────────────────────
 const animationKeyframes = `
 @keyframes dayTapBounce {
   0% { transform: scale(1); }
@@ -496,7 +496,7 @@ const styles: Record<string, CSSProperties> = {
   },
 };
 
-// ─── Data ───────────────────────────────────────────────────────
+// ─── Data ─────────────────────────────────────────────────────
 const DAYS = [
   { day: "월", date: "23", color: colors.black },
   { day: "화", date: "24", color: colors.black },
@@ -634,7 +634,7 @@ type Tab = "구내식당" | "간편식";
 
 const PULL_THRESHOLD = 60;
 
-// ─── App ───────────────────────────────────────────────────────
+// ─── App ─────────────────────────────────────────────────────
 export default function App() {
   const [activeTab, setActiveTab] = useState<Tab>("구내식당");
   const [mealTime, setMealTime] = useState<MealTime>("점심");
@@ -1029,7 +1029,7 @@ export default function App() {
         />
         <NavBtn
           icon={
-            <Receipt
+            <ScrollText
               size={22}
               strokeWidth={activeNav === "receipt" ? 2.2 : 1.8}
               color={
