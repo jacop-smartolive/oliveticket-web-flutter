@@ -1,25 +1,3 @@
-/**
- * QrPaymentPage
- *
- * 위치: /src/app/components/QrPaymentPage.tsx
- *
- * ──────────────────────────────────────────────────────────────
- * ⚠️ Flutter 변환 매뉴얼 — ⚠️ Flutter-XX 태그로 검색
- * ──────────────────────────────────────────────────────────────
- * Flutter-01  width:"100%"               → Expanded / double.infinity
- * Flutter-02  overflowY:"auto"           → SingleChildScrollView
- * Flutter-05  boxShadow                  → BoxDecoration(boxShadow:[BoxShadow(...)])
- * Flutter-07  objectFit:"cover"          → BoxFit.cover
- * Flutter-08  width/height:"100%"        → MediaQuery.of(context).size.width
- * Flutter-12  transition (CSS)           → AnimationController / SlideTransition
- * Flutter-13  cursor:"pointer"           → 삭제
- * Flutter-16  <img src>                  → Image.asset(...) / CachedNetworkImage
- * Flutter-17  <button> / onClick         → GestureDetector / ElevatedButton
- * Flutter-21  <svg> QrCodeSvg           → CustomPainter + Canvas.drawRect
- * Flutter-22  zIndex                     → Stack children 순서로 제어
- * ──────────────────────────────────────────────────────────────
- */
-
 import { useState, useEffect, useMemo } from "react";
 import type { CSSProperties } from "react";
 import { ChevronLeft, ChevronRight, RefreshCw, X, Check, Circle } from "lucide-react";
@@ -85,11 +63,9 @@ export default function QrPaymentPage({ onBack }: QrPaymentPageProps) {
   return (
     <div style={pageStyles.screen}>
       {/* ── Header ── */}
-      {/* ⚠️ Flutter-18: <div> → Container / Row */}
       <div style={pageStyles.header}>
         <div style={pageStyles.headerInner}>
           <div style={pageStyles.headerLeftGroup}>
-            {/* ⚠️ Flutter-17: <button> onClick → IconButton onPressed */}
             <button onClick={onBack} style={pageStyles.backBtn}>
               <ChevronLeft size={26} strokeWidth={2.2} color={colors.black} />
             </button>
@@ -101,7 +77,7 @@ export default function QrPaymentPage({ onBack }: QrPaymentPageProps) {
               strokeWidth={2.2}
               color={colors.black}
               style={{
-                transition: "transform 0.5s ease", // ⚠️ Flutter-12: AnimationController + RotationTransition으로 교체
+                transition: "transform 0.5s ease",
                 transform: `rotate(${spinCount * 180}deg)`,
               }}
             />
@@ -110,12 +86,10 @@ export default function QrPaymentPage({ onBack }: QrPaymentPageProps) {
       </div>
 
       {/* ── Scroll Content ── */}
-      {/* ⚠️ Flutter-02: <div overflowY> → SingleChildScrollView */}
       <div style={pageStyles.scrollArea}>
         {/* ── Event Banner ── */}
         <div style={pageStyles.bannerSection}>
           <div style={pageStyles.bannerWrap}>
-            {/* ⚠️ Flutter-16: <img src={img}> → Image.asset('assets/images/event_banner.png') */}
             <img
               src={img}
               alt="event banner"
@@ -151,11 +125,10 @@ export default function QrPaymentPage({ onBack }: QrPaymentPageProps) {
               </div>
             ) : (
               <>
-                {/* ⚠️ Flutter-21: QrCodeSvg → CustomPainter + Canvas.drawRect 로 변환 */}
                 <div style={{
                   ...pageStyles.qrImgWrap,
                   opacity: isExpired ? 0.25 : 1,
-                  cursor: isExpired ? "default" : "pointer", // ⚠️ Flutter-13: 삭제
+                  cursor: isExpired ? "default" : "pointer",
                 }}
                   onClick={() => { if (!isExpired) setShowPaymentPopup(true); }}
                 >
@@ -206,7 +179,6 @@ export default function QrPaymentPage({ onBack }: QrPaymentPageProps) {
       )}
 
       {/* ── Bottom Fixed Button ── */}
-      {/* ⚠️ Flutter-17: <button> → ElevatedButton / TextButton */}
       <div style={pageStyles.bottomBar}>
         <button style={pageStyles.chargeBtn}>
           <span style={pageStyles.chargePIcon}>P</span>
@@ -228,8 +200,8 @@ const pageStyles: Record<string, CSSProperties> = {
     display: "flex",
     flexDirection: "column",
     backgroundColor: colors.bg,
-    fontFamily: "'Pretendard', sans-serif", // ⚠️ Flutter-20: GoogleFonts.pretendard() 또는 pubspec.yaml 등록
-    zIndex: 100, // ⚠️ Flutter-22: Stack children 순서로 제어 (전체화면이므로 제거 가능)
+    fontFamily: "'Pretendard', sans-serif",
+    zIndex: 100,
   },
   header: {
     display: "flex",
@@ -239,8 +211,8 @@ const pageStyles: Record<string, CSSProperties> = {
     paddingRight: spacing.lg,
     paddingTop: spacing.sm + 2,
     paddingBottom: spacing.sm + 2,
-    boxShadow: "0 2px 10px rgba(0,0,0,0.06)", // ⚠️ Flutter-05: BoxDecoration(boxShadow:[BoxShadow(...)])로 교체
-    zIndex: 10, // ⚠️ Flutter-22: Stack children 순서로 제어
+    boxShadow: "0 2px 10px rgba(0,0,0,0.06)",
+    zIndex: 10,
   },
   headerInner: {
     display: "flex",
@@ -261,8 +233,8 @@ const pageStyles: Record<string, CSSProperties> = {
     alignItems: "center",
     justifyContent: "center",
     background: "none",
-    border: "none", // ⚠️ Flutter-04: Flutter에서 border: none 불필요
-    cursor: "pointer", // ⚠️ Flutter-13: 삭제
+    border: "none",
+    cursor: "pointer",
     padding: 0,
   },
   refreshBtn: {
@@ -272,8 +244,8 @@ const pageStyles: Record<string, CSSProperties> = {
     alignItems: "center",
     justifyContent: "center",
     background: "none",
-    border: "none", // ⚠️ Flutter-04: Flutter에서 border: none 불필요
-    cursor: "pointer", // ⚠️ Flutter-13: 삭제
+    border: "none",
+    cursor: "pointer",
     padding: 0,
   },
   headerTitle: {
@@ -284,7 +256,7 @@ const pageStyles: Record<string, CSSProperties> = {
   },
   scrollArea: {
     flex: 1,
-    overflowY: "auto", // ⚠️ Flutter-02: SingleChildScrollView로 교체
+    overflowY: "auto",
   },
   bannerSection: {
     paddingLeft: spacing.lg,
@@ -293,7 +265,7 @@ const pageStyles: Record<string, CSSProperties> = {
   },
   bannerWrap: {
     position: "relative",
-    overflow: "hidden", // ⚠️ Flutter-03: ClipRRect(borderRadius: BorderRadius.circular(12))로 교체
+    overflow: "hidden",
     borderRadius: 12,
     height: 101,
   },
@@ -301,9 +273,9 @@ const pageStyles: Record<string, CSSProperties> = {
     position: "absolute",
     top: 0,
     left: 0,
-    width: "100%", // ⚠️ Flutter-08: MediaQuery.of(context).size.width로 교체
+    width: "100%",
     height: "100%",
-    objectFit: "cover", // ⚠️ Flutter-07: BoxFit.cover로 교체
+    objectFit: "cover",
   },
   bannerOverlay: {
     position: "absolute",
@@ -344,7 +316,7 @@ const pageStyles: Record<string, CSSProperties> = {
   qrCard: {
     backgroundColor: colors.white,
     borderRadius: 12,
-    boxShadow: "0 0 10px rgba(234,234,234,0.7)", // ⚠️ Flutter-05: BoxDecoration(boxShadow:[BoxShadow(...)])로 교체
+    boxShadow: "0 0 10px rgba(234,234,234,0.7)",
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
@@ -379,12 +351,12 @@ const pageStyles: Record<string, CSSProperties> = {
     paddingBottom: spacing.sm + 2,
     backgroundColor: colors.primaryAlt,
     borderRadius: 12,
-    border: "none", // ⚠️ Flutter-04: Flutter에서 border: none 불필요
+    border: "none",
     color: colors.white,
     fontSize: 14,
     fontWeight: 700,
     letterSpacing: -0.14,
-    cursor: "pointer", // ⚠️ Flutter-13: 삭제
+    cursor: "pointer",
   },
   pointsSection: {
     paddingLeft: spacing.lg,
@@ -395,7 +367,7 @@ const pageStyles: Record<string, CSSProperties> = {
   pointsCard: {
     backgroundColor: colors.white,
     borderRadius: 12,
-    boxShadow: "0 0 10px rgba(234,234,234,0.7)", // ⚠️ Flutter-05: BoxDecoration(boxShadow:[BoxShadow(...)])로 교체
+    boxShadow: "0 0 10px rgba(234,234,234,0.7)",
     display: "flex",
     flexDirection: "row",
     alignItems: "center",
@@ -425,11 +397,11 @@ const pageStyles: Record<string, CSSProperties> = {
   },
   bottomBar: {
     position: "relative",
-    zIndex: 10, // ⚠️ Flutter-22: Stack children 순서로 제어
+    zIndex: 10,
     backgroundColor: colors.white,
     borderTopLeftRadius: 15,
     borderTopRightRadius: 15,
-    boxShadow: "0 -1px 8px rgba(163,163,163,0.6)", // ⚠️ Flutter-05: BoxDecoration(boxShadow:[BoxShadow(...)])로 교체
+    boxShadow: "0 -1px 8px rgba(163,163,163,0.6)",
     padding: spacing.lg,
     paddingBottom: spacing.xl,
   },
@@ -437,16 +409,16 @@ const pageStyles: Record<string, CSSProperties> = {
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    width: "100%", // ⚠️ Flutter-01: double.infinity 또는 SizedBox(width: double.infinity)로 교체
+    width: "100%",
     height: 48,
     backgroundColor: colors.primary,
     borderRadius: 12,
-    border: "none", // ⚠️ Flutter-04: Flutter에서 border: none 불필요
+    border: "none",
     color: colors.white,
     fontSize: 16,
     fontWeight: 700,
     letterSpacing: -0.16,
-    cursor: "pointer", // ⚠️ Flutter-13: 삭제
+    cursor: "pointer",
   },
   chargePIcon: {
     display: "inline-flex",
@@ -455,7 +427,7 @@ const pageStyles: Record<string, CSSProperties> = {
     width: 20,
     height: 20,
     borderRadius: 6,
-    backgroundColor: "rgba(255,255,255,0.3)", // ⚠️ Flutter-19: Colors.white.withOpacity(0.3)으로 교체
+    backgroundColor: "rgba(255,255,255,0.3)",
     fontSize: 12,
     fontWeight: 800,
     color: colors.white,
@@ -464,14 +436,13 @@ const pageStyles: Record<string, CSSProperties> = {
 };
 
 // ─── QR Code Generator ───────────────────────────────────────
-// ⚠️ Flutter-21: QrCodeSvg 컴포넌트 전체 → CustomPainter + Canvas.drawRect 로 변환
-//   또는 qr_flutter 패키지: QrImageView(data: '...', version: QrVersions.auto)
 function generateQrMatrix(seed: number): boolean[][] {
   const size = 25;
   const matrix: boolean[][] = Array.from({ length: size }, () =>
     Array(size).fill(false)
   );
 
+  // Finder patterns (3 corners)
   const drawFinder = (r: number, c: number) => {
     for (let i = 0; i < 7; i++) {
       for (let j = 0; j < 7; j++) {
@@ -485,6 +456,7 @@ function generateQrMatrix(seed: number): boolean[][] {
   drawFinder(0, size - 7);
   drawFinder(size - 7, 0);
 
+  // Separator (white border around finders)
   const clearSep = (r: number, c: number, h: boolean) => {
     for (let i = 0; i < 8; i++) {
       if (h) {
@@ -500,11 +472,13 @@ function generateQrMatrix(seed: number): boolean[][] {
   clearSep(7, size - 8, true); clearSep(0, size - 8, false);
   clearSep(size - 8, 0, true); clearSep(size - 7, 7, false);
 
+  // Timing patterns
   for (let i = 8; i < size - 8; i++) {
     matrix[6][i] = i % 2 === 0;
     matrix[i][6] = i % 2 === 0;
   }
 
+  // Alignment pattern
   const drawAlignment = (r: number, c: number) => {
     for (let i = -2; i <= 2; i++) {
       for (let j = -2; j <= 2; j++) {
@@ -516,6 +490,7 @@ function generateQrMatrix(seed: number): boolean[][] {
   };
   drawAlignment(size - 9, size - 9);
 
+  // Data area - pseudo-random fill
   let rng = seed;
   const nextRng = () => {
     rng = (rng * 1103515245 + 12345) & 0x7fffffff;
@@ -539,15 +514,13 @@ function generateQrMatrix(seed: number): boolean[][] {
   return matrix;
 }
 
-// ⚠️ Flutter-21: QrCodeSvg → qr_flutter 패키지 QrImageView 또는 CustomPainter로 변환
 function QrCodeSvg({ size = 160, seed = 42 }: { size?: number; seed?: number }) {
   const matrix = useMemo(() => generateQrMatrix(seed), [seed]);
   const moduleCount = matrix.length;
-  const moduleSize = size / (moduleCount + 2);
-  const offset = moduleSize;
+  const moduleSize = size / (moduleCount + 2); // +2 for quiet zone
+  const offset = moduleSize; // quiet zone
 
   return (
-    // ⚠️ Flutter-21: <svg> → CustomPainter / qr_flutter 패키지로 변환
     <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
       <rect width={size} height={size} fill="white" />
       {matrix.map((row, r) =>
@@ -582,22 +555,19 @@ function PaymentCompletePopup({ onClose, onAdditionalPay }: { onClose: () => voi
   };
 
   return (
-    // ⚠️ Flutter-12: opacity transition → AnimatedOpacity로 교체
-    // ⚠️ Flutter-22: zIndex 200 → Stack children 순서로 제어
     <div
       style={{
         ...popupStyles.overlay,
         opacity: slideIn ? 1 : 0,
-        transition: "opacity 0.3s ease", // ⚠️ Flutter-12: AnimatedOpacity로 교체
+        transition: "opacity 0.3s ease",
       }}
       onClick={handleClose}
     >
-      {/* ⚠️ Flutter-12: translateY transform → SlideTransition + Tween<Offset>으로 교체 */}
       <div
         style={{
           ...popupStyles.sheet,
           transform: slideIn ? "translateY(0)" : "translateY(100%)",
-          transition: "transform 0.35s cubic-bezier(0.32,0.72,0,1)", // ⚠️ Flutter-12: SlideTransition + CurvedAnimation으로 교체
+          transition: "transform 0.35s cubic-bezier(0.32,0.72,0,1)",
         }}
         onClick={(e) => e.stopPropagation()}
       >
@@ -640,7 +610,6 @@ function PaymentCompletePopup({ onClose, onAdditionalPay }: { onClose: () => voi
         </div>
 
         {/* ── Event Banner ── */}
-        {/* ⚠️ Flutter-16: <img src={img}> → Image.asset('assets/images/event_banner.png') */}
         <div style={popupStyles.bannerWrap}>
           <img src={img} alt="event banner" style={popupStyles.bannerImg} />
           <div style={popupStyles.bannerOverlay}>
@@ -662,8 +631,8 @@ const popupStyles: Record<string, CSSProperties> = {
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: "rgba(25,26,28,0.4)", // ⚠️ Flutter-19: Colors.black.withOpacity(0.4)으로 교체
-    zIndex: 200, // ⚠️ Flutter-22: Stack children 순서로 제어
+    backgroundColor: "rgba(25,26,28,0.4)",
+    zIndex: 200,
     display: "flex",
     flexDirection: "column",
     justifyContent: "flex-end",
@@ -676,7 +645,7 @@ const popupStyles: Record<string, CSSProperties> = {
     paddingLeft: spacing.xl + 2,
     paddingRight: spacing.xl + 2,
     paddingBottom: 28,
-    fontFamily: "'Pretendard', sans-serif", // ⚠️ Flutter-20: GoogleFonts.pretendard() 또는 pubspec.yaml 등록
+    fontFamily: "'Pretendard', sans-serif",
   },
   sheetHeader: {
     display: "flex",
@@ -699,8 +668,8 @@ const popupStyles: Record<string, CSSProperties> = {
     justifyContent: "center",
     backgroundColor: "#F0F0F0",
     borderRadius: 999,
-    border: "none", // ⚠️ Flutter-04: Flutter에서 border: none 불필요
-    cursor: "pointer", // ⚠️ Flutter-13: 삭제
+    border: "none",
+    cursor: "pointer",
     padding: 0,
   },
   amountRow: {
@@ -726,12 +695,12 @@ const popupStyles: Record<string, CSSProperties> = {
     height: 36,
     backgroundColor: colors.primaryAlt,
     borderRadius: 100,
-    border: "none", // ⚠️ Flutter-04: Flutter에서 border: none 불필요
+    border: "none",
     color: colors.white,
     fontSize: 13,
     fontWeight: 700,
     letterSpacing: -0.13,
-    cursor: "pointer", // ⚠️ Flutter-13: 삭제
+    cursor: "pointer",
   },
   detailSection: {
     display: "flex",
@@ -760,7 +729,7 @@ const popupStyles: Record<string, CSSProperties> = {
   },
   bannerWrap: {
     position: "relative",
-    overflow: "hidden", // ⚠️ Flutter-03: ClipRRect(borderRadius: BorderRadius.circular(12))로 교체
+    overflow: "hidden",
     borderRadius: 12,
     height: 101,
   },
@@ -768,9 +737,9 @@ const popupStyles: Record<string, CSSProperties> = {
     position: "absolute",
     top: 0,
     left: 0,
-    width: "100%", // ⚠️ Flutter-08: MediaQuery.of(context).size.width로 교체
+    width: "100%",
     height: "100%",
-    objectFit: "cover", // ⚠️ Flutter-07: BoxFit.cover로 교체
+    objectFit: "cover",
   },
   bannerOverlay: {
     position: "absolute",

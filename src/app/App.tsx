@@ -1,35 +1,13 @@
 /**
- * 올리브식권 - Figma Make 미리보기용 (Flutter 변환 대응)
- * 실제 Flutter 코드 → /lib/main.dart
+ * 올리브식권 - Figma Make 미리보기용
+ * Flutter 변환 참조: oliveticket-flutter-app 저장소
  *
- * ──────────────────────────────────────────────────────────────
- * ⚠️ Flutter 변환 매뉴얼 (Flutter 변환 시 참조)
- * ──────────────────────────────────────────────────────────────
- * [태그 목록] — 코드 내 ⚠️ Flutter-XX 태그로 검색
- *
- * Flutter-01  width:"100%" / height:"100vh"  → Expanded / SizedBox.expand
- * Flutter-02  overflowY:"auto"               → SingleChildScrollView
- * Flutter-03  overflow:"hidden"              → ClipRRect(borderRadius:...)
- * Flutter-04  border 단축표기                → Border.all(...) / BorderSide(...)
- * Flutter-05  boxShadow                      → BoxDecoration(boxShadow:[BoxShadow(...)])
- * Flutter-06  linear-gradient                → LinearGradient (Flutter 내장)
- * Flutter-07  objectFit:"cover"              → BoxFit.cover
- * Flutter-08  calc() / % width               → MediaQuery.of(context).size.width
- * Flutter-09  backdropFilter:"blur"          → BackdropFilter + ImageFilter.blur
- * Flutter-10  position:"sticky"              → SliverPersistentHeader
- * Flutter-11  @keyframes / animation         → AnimationController + Tween
- * Flutter-12  transition                     → AnimatedContainer / AnimatedOpacity
- * Flutter-13  cursor:"pointer"               → 삭제 (Flutter에서 불필요)
- * Flutter-14  padding 단축표기               → EdgeInsets.symmetric(...) / only(...)
- * Flutter-15  <style> 태그 주입              → 삭제 (Flutter에서 미지원)
- * Flutter-16  <img>                          → Image.network(...) / CachedNetworkImage
- * Flutter-17  <button> / onClick             → GestureDetector / InkWell / ElevatedButton
- * Flutter-18  <header>/<div>/<span>/<p>       → Container / Row / Column / Text
- * Flutter-19  background:"rgba(...)"         → Color(0x...) / Colors.black.withOpacity(...)
- * Flutter-20  fontFamily                     → GoogleFonts / pubspec.yaml fonts 등록
- * Flutter-21  <svg> 태그                     → flutter_svg (SvgPicture) / CustomPainter
- * Flutter-22  zIndex                         → Stack children 순서로 제어
- * ──────────────────────────────────────────────────────────────
+ * ──────────────────────────────────────────────────────────────────
+ * Flutter 변환 워크플로우
+ * ──────────────────────────────────────────────────────────────────
+ * 1차: oliveticket-web-flutter  — Figma Make (React 웹 디자인)
+ * 2차: oliveticket-flutter-app  — Flutter Dart 실제 앱 코드
+ * ──────────────────────────────────────────────────────────────────
  */
 
 import { useState, useRef, useEffect, useCallback } from "react";
@@ -37,28 +15,17 @@ import type { ReactNode, CSSProperties } from "react";
 import {
   ShoppingCart,
   Home,
-  ScrollText,
-  User,
+  Receipt,
+  UserRound,
   ChevronRight,
+  Bell,
 } from "lucide-react";
 import svgPaths from "../imports/svg-apf66xr4az";
-import BellNotificationIcon from "../imports/BellNotificationIcon2-49-96";
 import QrIcon from "../imports/QrIcon";
 import QrPaymentPage from "./components/QrPaymentPage";
 import NotificationPage from "./components/NotificationPage";
 
-/*
- * ⚠️ Flutter 변환 시 pubspec.yaml에 추가:
- * dependencies:
- *   flutter_svg: ^2.0.0           # Flutter-21 (SVG 렌더링)
- *   cached_network_image: ^3.0.0  # Flutter-16 (네트워크 이미지 캐싱)
- *   lucide_flutter: ^1.0.0        # 아이콘 교체 (lucide-react 대체)
- *   google_fonts: ^6.0.0          # Flutter-20 (Pretendard 대체)
- *   go_router: ^12.0.0            # Flutter-22 (네비게이션)
- */
-
-// ─── Keyframes for day tap animation ─────────────────────────
-// ⚠️ Flutter-11: @keyframes 미지원 → AnimationController + Tween으로 교체
+// ─── Keyframes for day tap animation ─────────────────────
 const animationKeyframes = `
 @keyframes dayTapBounce {
   0% { transform: scale(1); }
@@ -104,21 +71,21 @@ const radius = {
   full: 999,
 };
 
-// ─── StyleSheet (Flutter 패턴 대응) ──────────────────────────
+// ─── StyleSheet ──────────────────────────────────────────────
 const styles: Record<string, CSSProperties> = {
   screen: {
-    width: "100%", // ⚠️ Flutter-01: Expanded 또는 SizedBox.expand로 교체
-    height: "100vh", // ⚠️ Flutter-01: SizedBox.expand로 교체
+    width: "100%",
+    height: "100vh",
     display: "flex",
     flexDirection: "column",
     position: "relative",
-    overflow: "hidden", // ⚠️ Flutter-03: ClipRRect로 교체
+    overflow: "hidden",
     backgroundColor: colors.white,
-    fontFamily: "'Pretendard', 'Noto Sans KR', sans-serif", // ⚠️ Flutter-20: GoogleFonts.pretendard() 또는 pubspec.yaml 등록
+    fontFamily: "'Pretendard', 'Noto Sans KR', sans-serif",
   },
   scrollArea: {
     flex: 1,
-    overflowY: "auto", // ⚠️ Flutter-02: SingleChildScrollView로 교체
+    overflowY: "auto",
     backgroundColor: colors.white,
   },
   header: {
@@ -131,8 +98,8 @@ const styles: Record<string, CSSProperties> = {
     paddingTop: spacing.sm + 4,
     paddingBottom: spacing.sm + 4,
     backgroundColor: colors.white,
-    borderBottom: `1px solid ${colors.gray6}`, // ⚠️ Flutter-04: Border(bottom: BorderSide(color:..., width: 1))로 교체
-    zIndex: 10, // ⚠️ Flutter-22: Stack children 순서로 제어
+    borderBottom: `1px solid ${colors.gray6}`,
+    zIndex: 10,
   },
   headerLeft: {
     display: "flex",
@@ -159,8 +126,8 @@ const styles: Record<string, CSSProperties> = {
     alignItems: "center",
     justifyContent: "center",
     background: "none",
-    border: "none", // ⚠️ Flutter-04: Flutter에서 border: none 불필요
-    cursor: "pointer", // ⚠️ Flutter-13: 삭제
+    border: "none",
+    cursor: "pointer",
     position: "relative",
   },
   bellDot: {
@@ -171,7 +138,7 @@ const styles: Record<string, CSSProperties> = {
     borderRadius: radius.full,
     top: 8,
     right: 8,
-    border: "1.5px solid white", // ⚠️ Flutter-04: Border.all(color: Colors.white, width: 1.5)로 교체
+    border: "1.5px solid white",
   },
   pointsSection: {
     paddingLeft: spacing.lg,
@@ -191,7 +158,7 @@ const styles: Record<string, CSSProperties> = {
     paddingBottom: spacing.lg,
     backgroundColor: colors.white,
     borderRadius: 12,
-    boxShadow: "0 2px 12px rgba(0,0,0,0.06)", // ⚠️ Flutter-05: BoxDecoration(boxShadow:[BoxShadow(...)])로 교체
+    boxShadow: "0 2px 12px rgba(0,0,0,0.06)",
   },
   pointsLabel: {
     fontSize: 13,
@@ -213,7 +180,7 @@ const styles: Record<string, CSSProperties> = {
   },
   tabsSection: {
     backgroundColor: colors.bg,
-    borderBottom: `1px solid ${colors.gray7}`, // ⚠️ Flutter-04: Border(bottom: BorderSide(...))로 교체
+    borderBottom: `1px solid ${colors.gray7}`,
   },
   tabsRow: {
     display: "flex",
@@ -226,8 +193,8 @@ const styles: Record<string, CSSProperties> = {
     paddingBottom: 14,
     marginRight: spacing.xxl,
     background: "none",
-    border: "none", // ⚠️ Flutter-04: Flutter에서 border: none 불필요
-    cursor: "pointer", // ⚠️ Flutter-13: 삭제
+    border: "none",
+    cursor: "pointer",
     letterSpacing: -0.3,
   },
   tabIndicator: {
@@ -245,13 +212,14 @@ const styles: Record<string, CSSProperties> = {
     paddingTop: spacing.md,
     paddingBottom: spacing.lg,
     backgroundColor: colors.bg,
-    borderBottom: `1px solid ${colors.gray6}`, // ⚠️ Flutter-04: Border(bottom: BorderSide(...))로 교체
+    borderBottom: `1px solid ${colors.gray6}`,
   },
   calendarRow: {
     display: "flex",
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
+    gap: 4,
   },
   dayCell: {
     display: "flex",
@@ -272,11 +240,11 @@ const styles: Record<string, CSSProperties> = {
     justifyContent: "center",
     minWidth: 52,
     height: 58,
-    border: `2.5px solid ${colors.black}`, // ⚠️ Flutter-04: Border.all(color:..., width: 2.5)로 교체
+    border: `2.5px solid ${colors.black}`,
     borderRadius: radius.md,
     padding: "6px 14px",
     backgroundColor: colors.bg,
-    boxShadow: "0 2px 10px rgba(0,0,0,0.07)", // ⚠️ Flutter-05: BoxDecoration(boxShadow:[BoxShadow(...)])로 교체
+    boxShadow: "0 2px 10px rgba(0,0,0,0.07)",
   },
   todayLabel: {
     fontSize: 10,
@@ -296,10 +264,10 @@ const styles: Record<string, CSSProperties> = {
   },
   bannerWrap: {
     position: "relative",
-    overflow: "hidden", // ⚠️ Flutter-03: ClipRRect(borderRadius: BorderRadius.circular(12))로 교체
+    overflow: "hidden",
     borderRadius: 12,
     background:
-      "linear-gradient(135deg, #FF4B50 0%, #E8182E 60%, #C91020 100%)", // ⚠️ Flutter-06: BoxDecoration(gradient: LinearGradient(...))로 교체
+      "linear-gradient(135deg, #FF4B50 0%, #E8182E 60%, #C91020 100%)",
     height: 100,
   },
   bannerCircle1: {
@@ -307,7 +275,7 @@ const styles: Record<string, CSSProperties> = {
     width: 120,
     height: 120,
     borderRadius: radius.full,
-    background: "rgba(255,255,255,0.08)", // ⚠️ Flutter-19: Colors.white.withOpacity(0.08)으로 교체
+    background: "rgba(255,255,255,0.08)",
     right: -20,
     top: -30,
   },
@@ -316,7 +284,7 @@ const styles: Record<string, CSSProperties> = {
     width: 80,
     height: 80,
     borderRadius: radius.full,
-    background: "rgba(255,255,255,0.06)", // ⚠️ Flutter-19: Colors.white.withOpacity(0.06)으로 교체
+    background: "rgba(255,255,255,0.06)",
     right: 60,
     bottom: -20,
   },
@@ -335,14 +303,14 @@ const styles: Record<string, CSSProperties> = {
   bannerTag: {
     fontSize: 10,
     fontWeight: 500,
-    color: "rgba(255,255,255,0.75)", // ⚠️ Flutter-19: Colors.white.withOpacity(0.75)으로 교체
+    color: "rgba(255,255,255,0.75)",
     marginBottom: spacing.xs,
     letterSpacing: 1,
   },
   bannerSub: {
     fontSize: 13,
     fontWeight: 600,
-    color: "rgba(255,255,255,0.9)", // ⚠️ Flutter-19: Colors.white.withOpacity(0.9)으로 교체
+    color: "rgba(255,255,255,0.9)",
     marginBottom: 2,
   },
   bannerTitle: {
@@ -357,7 +325,7 @@ const styles: Record<string, CSSProperties> = {
     bottom: 0,
     width: 120,
     height: 100,
-    objectFit: "cover", // ⚠️ Flutter-07: BoxFit.cover로 교체
+    objectFit: "cover",
   },
   mealTabsSection: {
     display: "flex",
@@ -381,23 +349,23 @@ const styles: Record<string, CSSProperties> = {
     backgroundColor: colors.white,
   },
   menuCard: {
-    flexBasis: "calc(50% - 6px)", // ⚠️ Flutter-08: MediaQuery.of(context).size.width / 2 - padding으로 교체
-    maxWidth: "calc(50% - 6px)", // ⚠️ Flutter-08: 위와 동일
+    flexBasis: "calc(50% - 6px)",
+    maxWidth: "calc(50% - 6px)",
     backgroundColor: colors.white,
     borderRadius: radius.xl,
-    overflow: "hidden", // ⚠️ Flutter-03: ClipRRect(borderRadius: BorderRadius.circular(20))로 교체
+    overflow: "hidden",
     display: "flex",
     flexDirection: "column",
-    boxShadow: "0 2px 10px rgba(0,0,0,0.07)", // ⚠️ Flutter-05: BoxDecoration(boxShadow:[BoxShadow(...)])로 교체
+    boxShadow: "0 2px 10px rgba(0,0,0,0.07)",
   },
   menuImgWrap: {
     position: "relative",
     height: 140,
   },
   menuImg: {
-    width: "100%", // ⚠️ Flutter-08: MediaQuery 기반 고정 사이즈로 교체
+    width: "100%",
     height: "100%",
-    objectFit: "cover", // ⚠️ Flutter-07: BoxFit.cover로 교체
+    objectFit: "cover",
   },
   kcalBadge: {
     position: "absolute",
@@ -408,11 +376,11 @@ const styles: Record<string, CSSProperties> = {
     paddingTop: 2,
     paddingBottom: 2,
     borderRadius: radius.full,
-    backgroundColor: "rgba(0,0,0,0.45)", // ⚠️ Flutter-19: Colors.black.withOpacity(0.45)으로 교체
+    backgroundColor: "rgba(0,0,0,0.45)",
     fontSize: 10,
     fontWeight: 600,
     color: colors.white,
-    backdropFilter: "blur(4px)", // ⚠️ Flutter-09: BackdropFilter + ImageFilter.blur로 교체
+    backdropFilter: "blur(4px)",
   },
   menuBody: {
     padding: spacing.md,
@@ -443,16 +411,12 @@ const styles: Record<string, CSSProperties> = {
   menuPriceRow: {
     marginTop: 2,
     paddingTop: spacing.sm,
-    borderTop: "1px solid #F5F5F5", // ⚠️ Flutter-04: Border(top: BorderSide(color: Color(0xFFF5F5F5), width: 1))로 교체
+    borderTop: "1px solid #F5F5F5",
   },
   menuPrice: {
     fontSize: 14,
     fontWeight: 800,
     color: colors.black,
-  },
-  menuPriceUnit: {
-    fontSize: 11,
-    color: colors.gray2,
   },
   bottomNav: {
     backgroundColor: colors.white,
@@ -464,9 +428,9 @@ const styles: Record<string, CSSProperties> = {
     paddingRight: spacing.lg,
     paddingTop: spacing.sm,
     paddingBottom: spacing.md,
-    borderTop: `1px solid ${colors.gray6}`, // ⚠️ Flutter-04: Border(top: BorderSide(...))로 교체
+    borderTop: `1px solid ${colors.gray6}`,
     position: "relative",
-    zIndex: 10, // ⚠️ Flutter-22: Stack children 순서로 제어
+    zIndex: 10,
   },
   navBtn: {
     display: "flex",
@@ -474,8 +438,8 @@ const styles: Record<string, CSSProperties> = {
     alignItems: "center",
     gap: 2,
     background: "none",
-    border: "none", // ⚠️ Flutter-04: Flutter에서 border: none 불필요
-    cursor: "pointer", // ⚠️ Flutter-13: 삭제
+    border: "none",
+    cursor: "pointer",
     padding: "4px 12px",
     minWidth: 60,
   },
@@ -498,20 +462,20 @@ const styles: Record<string, CSSProperties> = {
     paddingBottom: spacing.md,
     borderRadius: radius.full,
     backgroundColor: colors.primary,
-    boxShadow: "0 4px 16px rgba(238,43,47,0.4)", // ⚠️ Flutter-05: BoxDecoration(boxShadow:[BoxShadow(color: Color(0x66EE2B2F),...)])로 교체
+    boxShadow: "0 4px 16px rgba(238,43,47,0.4)",
     color: colors.white,
     fontWeight: 700,
     fontSize: 14,
     letterSpacing: -0.2,
-    cursor: "pointer", // ⚠️ Flutter-13: 삭제
-    zIndex: 20, // ⚠️ Flutter-22: Stack children 순서로 제어
-    border: "none", // ⚠️ Flutter-04: Flutter에서 border: none 불필요
+    cursor: "pointer",
+    zIndex: 20,
+    border: "none",
   },
   stickyHeader: {
-    position: "sticky", // ⚠️ Flutter-10: SliverPersistentHeader로 교체
+    position: "sticky",
     top: 0,
     backgroundColor: colors.bg,
-    zIndex: 10, // ⚠️ Flutter-22: Stack children 순서로 제어
+    zIndex: 10,
   },
   pullRefresh: {
     position: "absolute",
@@ -523,16 +487,16 @@ const styles: Record<string, CSSProperties> = {
     alignItems: "center",
     justifyContent: "center",
     backgroundColor: colors.bg,
-    zIndex: 10, // ⚠️ Flutter-22: Stack children 순서로 제어
+    zIndex: 10,
   },
   pullRefreshIcon: {
     width: 24,
     height: 24,
-    animation: "spinLoader 1s linear infinite", // ⚠️ Flutter-11: AnimationController + RotationTransition으로 교체
+    animation: "spinLoader 1s linear infinite",
   },
 };
 
-// ─── Data ─────────────────────────────────────────────────────
+// ─── Data ───────────────────────────────────────────────────────
 const DAYS = [
   { day: "월", date: "23", color: colors.black },
   { day: "화", date: "24", color: colors.black },
@@ -670,7 +634,7 @@ type Tab = "구내식당" | "간편식";
 
 const PULL_THRESHOLD = 60;
 
-// ─── App ─────────────────────────────────────────────────────
+// ─── App ───────────────────────────────────────────────────────
 export default function App() {
   const [activeTab, setActiveTab] = useState<Tab>("구내식당");
   const [mealTime, setMealTime] = useState<MealTime>("점심");
@@ -749,19 +713,15 @@ export default function App() {
   return (
     <div style={styles.screen}>
       {/* ── Injected Keyframes ── */}
-      {/* ⚠️ Flutter-15: <style> 태그 삭제, AnimationController 사용 */}
       <style>{animationKeyframes}</style>
-
       {/* ── Header ── */}
-      {/* ⚠️ Flutter-18: <header> → Container + Row */}
       <header style={{
         ...styles.header,
         borderBottom: isSticky ? "none" : `1px solid ${colors.gray6}`,
-        boxShadow: isSticky ? "0 2px 8px rgba(0,0,0,0.06)" : "none", // ⚠️ Flutter-05: BoxDecoration(boxShadow:[...])로 교체
+        boxShadow: isSticky ? "0 2px 8px rgba(0,0,0,0.06)" : "none",
       }}>
         <div style={styles.headerLeft}>
           <div style={{ width: 28, height: 28, flexShrink: 0 }}>
-            {/* ⚠️ Flutter-21: <svg> → SvgPicture.string() 또는 CustomPainter로 변환 */}
             <svg
               viewBox="0 0 466.474 466.337"
               fill="none"
@@ -799,7 +759,6 @@ export default function App() {
           <span style={styles.headerTitle}>올리브식권</span>
         </div>
         <div style={styles.headerRight}>
-          {/* ⚠️ Flutter-17: <button> → IconButton */}
           <button style={styles.iconBtn}>
             <ShoppingCart
               size={24}
@@ -808,16 +767,17 @@ export default function App() {
             />
           </button>
           <button style={styles.iconBtn} onClick={() => setShowNotification(true)}>
-            <div style={{ width: 24, height: 24 }}>
-              <BellNotificationIcon />
-            </div>
+            <Bell
+              size={24}
+              strokeWidth={2}
+              color={colors.black}
+            />
             <span style={styles.bellDot} />
           </button>
         </div>
       </header>
 
       {/* ── Scroll Area ── */}
-      {/* ⚠️ Flutter-02: <div overflowY> → SingleChildScrollView */}
       <div
         style={{
           ...styles.scrollArea,
@@ -829,7 +789,6 @@ export default function App() {
         onTouchEnd={handleTouchEnd}
       >
         {/* ── Pull to Refresh Indicator ── */}
-        {/* ⚠️ Flutter: RefreshIndicator 위젯으로 교체 */}
         <div
           style={{
             display: "flex",
@@ -838,7 +797,7 @@ export default function App() {
             height: pullDistance > 0 || isRefreshing ? pullDistance : 0,
             overflow: "hidden",
             backgroundColor: colors.bg,
-            transition: isRefreshing ? "none" : (isPulling.current ? "none" : "height 0.3s ease"), // ⚠️ Flutter-12: AnimatedContainer로 교체
+            transition: isRefreshing ? "none" : (isPulling.current ? "none" : "height 0.3s ease"),
           }}
         >
           {(pullDistance > 0 || isRefreshing) && (
@@ -847,10 +806,10 @@ export default function App() {
                 width: 24,
                 height: 24,
                 borderRadius: radius.full,
-                border: `2.5px solid ${colors.gray5}`, // ⚠️ Flutter-04: Border.all(...)로 교체
+                border: `2.5px solid ${colors.gray5}`,
                 borderTopColor: colors.gray2,
                 animation: isRefreshing
-                  ? "spinLoader 0.8s linear infinite" // ⚠️ Flutter-11: AnimationController + RotationTransition으로 교체
+                  ? "spinLoader 0.8s linear infinite"
                   : "none",
                 transform: isRefreshing
                   ? undefined
@@ -876,7 +835,6 @@ export default function App() {
         </div>
 
         {/* ── Sticky: Tabs + Calendar ── */}
-        {/* ⚠️ Flutter-10: position:sticky → SliverPersistentHeader로 교체 */}
         <div
           ref={stickyRef}
           style={{
@@ -922,8 +880,8 @@ export default function App() {
               backgroundColor: isSticky ? colors.white : colors.bg,
               borderBottom: isSticky
                 ? "none"
-                : `1px solid ${colors.gray6}`, // ⚠️ Flutter-04: Border(bottom: BorderSide(...))로 교체
-              boxShadow: "0 2px 8px rgba(0,0,0,0.06)", // ⚠️ Flutter-05: BoxDecoration(boxShadow:[...])로 교체
+                : `1px solid ${colors.gray6}`,
+              boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
             }}
           >
             <div style={styles.calendarRow}>
@@ -944,23 +902,24 @@ export default function App() {
                       alignItems: "center",
                       justifyContent: "center",
                       gap: 2,
-                      minWidth: 52,
+                      flex: 1,
+                      minWidth: 0,
                       height: 58,
                       borderRadius: radius.md,
                       border: isSelected
-                        ? `2.5px solid ${colors.black}` // ⚠️ Flutter-04: Border.all(color:..., width: 2.5)로 교체
+                        ? `2.5px solid ${colors.black}`
                         : "2.5px solid transparent",
                       backgroundColor: isSelected
                         ? colors.bg
                         : "transparent",
                       boxShadow: isSelected
-                        ? "0 2px 10px rgba(0,0,0,0.10)" // ⚠️ Flutter-05: BoxDecoration(boxShadow:[...])로 교체
+                        ? "0 2px 10px rgba(0,0,0,0.10)"
                         : "none",
-                      cursor: "pointer", // ⚠️ Flutter-13: 삭제
-                      padding: "6px 8px",
-                      flexShrink: 0,
+                      cursor: "pointer",
+                      padding: "6px 4px",
+                      background: "none",
                       animation:
-                        tappedDate === date ? "dayTapBounce 0.3s ease-in-out" : "none", // ⚠️ Flutter-11: AnimationController + ScaleTransition으로 교체
+                        tappedDate === date ? "dayTapBounce 0.3s ease-in-out" : "none",
                       animationFillMode: "forwards",
                     }}
                   >
@@ -992,7 +951,6 @@ export default function App() {
         </div>
 
         {/* ── Event Banner ── */}
-        {/* ⚠️ Flutter-06: linear-gradient → BoxDecoration(gradient: LinearGradient(...))로 교체 */}
         <div style={styles.bannerSection}>
           <div style={styles.bannerWrap}>
             <div style={styles.bannerCircle1} />
@@ -1004,7 +962,6 @@ export default function App() {
               </p>
               <p style={styles.bannerTitle}>먹고싶은 메뉴</p>
             </div>
-            {/* ⚠️ Flutter-16: <img src=URL> → Image.network(...) 또는 CachedNetworkImage */}
             <img
               src="https://images.unsplash.com/photo-1760020890915-ca605575b93b?w=300"
               alt="event"
@@ -1029,13 +986,13 @@ export default function App() {
                 border:
                   mealTime === t
                     ? "none"
-                    : `1px solid ${colors.gray5}`, // ⚠️ Flutter-04: Border.all(...)로 교체
+                    : `1px solid ${colors.gray5}`,
                 borderRadius: radius.full,
                 paddingLeft: spacing.xl,
                 paddingRight: spacing.xl,
                 paddingTop: spacing.sm,
                 paddingBottom: spacing.sm,
-                cursor: "pointer", // ⚠️ Flutter-13: 삭제
+                cursor: "pointer",
                 letterSpacing: -0.3,
               }}
             >
@@ -1045,7 +1002,6 @@ export default function App() {
         </div>
 
         {/* ── Menu Cards ── */}
-        {/* ⚠️ Flutter-08: flexWrap → Wrap 위젯 또는 GridView.count(crossAxisCount: 2) */}
         <div style={styles.menuGrid}>
           {menus.map((menu) => (
             <MenuCard key={menu.id} menu={menu} />
@@ -1054,7 +1010,6 @@ export default function App() {
       </div>
 
       {/* ── Bottom Nav ── */}
-      {/* ⚠️ Flutter-18: BottomNavigationBar 또는 NavigationBar 위젯으로 교체 */}
       <div style={styles.bottomNav}>
         <NavBtn
           icon={
@@ -1074,7 +1029,7 @@ export default function App() {
         />
         <NavBtn
           icon={
-            <ScrollText
+            <Receipt
               size={22}
               strokeWidth={activeNav === "receipt" ? 2.2 : 1.8}
               color={
@@ -1090,7 +1045,7 @@ export default function App() {
         />
         <NavBtn
           icon={
-            <User
+            <UserRound
               size={22}
               strokeWidth={activeNav === "my" ? 2.2 : 1.8}
               color={
@@ -1107,7 +1062,6 @@ export default function App() {
       </div>
 
       {/* ── Floating QR Button ── */}
-      {/* ⚠️ Flutter-22: position:absolute → Stack + Positioned(right:..., bottom:...) */}
       <button style={styles.floatingQR} onClick={() => setShowQrPayment(true)}>
         <div style={{ width: 20, height: 17, flexShrink: 0 }}>
           <QrIcon />
@@ -1116,13 +1070,11 @@ export default function App() {
       </button>
 
       {/* ── QR Payment Page ── */}
-      {/* ⚠️ Flutter: Navigator.push() 또는 GoRouter.go()로 교체 */}
       {showQrPayment && (
         <QrPaymentPage onBack={() => setShowQrPayment(false)} />
       )}
 
       {/* ── Notification Page ── */}
-      {/* ⚠️ Flutter: Navigator.push() 또는 GoRouter.go()로 교체 */}
       {showNotification && (
         <NotificationPage onBack={() => setShowNotification(false)} />
       )}
@@ -1131,25 +1083,6 @@ export default function App() {
 }
 
 // ─── Sub Components ───────────────────────────────────────────
-
-function DayCell({
-  day,
-  date,
-  color,
-}: {
-  day: string;
-  date: string;
-  color: string;
-}) {
-  return (
-    <div style={styles.dayCell}>
-      <span style={styles.dayLabel}>{day}</span>
-      <span style={{ fontSize: 15, fontWeight: 600, color }}>
-        {date}
-      </span>
-    </div>
-  );
-}
 
 function NavBtn({
   icon,
@@ -1163,7 +1096,6 @@ function NavBtn({
   onClick: () => void;
 }) {
   return (
-    // ⚠️ Flutter-17: <button> → GestureDetector + Column 또는 BottomNavigationBarItem
     <button onClick={onClick} style={styles.navBtn}>
       {icon}
       <span
@@ -1191,16 +1123,13 @@ function MenuCard({
   };
 }) {
   return (
-    // ⚠️ Flutter-18: <div> → Container + Column
     <div style={styles.menuCard}>
       <div style={styles.menuImgWrap}>
-        {/* ⚠️ Flutter-16: <img src=URL> → CachedNetworkImage */}
         <img
           src={menu.img}
           alt={menu.name}
           style={styles.menuImg}
         />
-        {/* ⚠️ Flutter-09: backdropFilter blur → BackdropFilter + ImageFilter.blur */}
         <span style={styles.kcalBadge}>{menu.kcal}</span>
       </div>
       <div style={styles.menuBody}>

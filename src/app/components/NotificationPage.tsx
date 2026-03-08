@@ -1,22 +1,3 @@
-/**
- * NotificationPage
- *
- * 위치: /src/app/components/NotificationPage.tsx
- *
- * ──────────────────────────────────────────────────────────────
- * ⚠️ Flutter 변환 매뉴얼 — ⚠️ Flutter-XX 태그로 검색
- * ──────────────────────────────────────────────────────────────
- * Flutter-02  overflowY:"auto"           → SingleChildScrollView / ListView.builder
- * Flutter-04  border 단축표기            → Border(bottom: BorderSide(...))
- * Flutter-05  boxShadow                  → BoxDecoration(boxShadow:[BoxShadow(...)])
- * Flutter-11  CSS transition (animation) → AnimationController + Tween
- * Flutter-12  transition (opacity/color) → AnimatedOpacity / AnimatedContainer
- * Flutter-13  cursor:"pointer"           → 삭제
- * Flutter-17  <button> / onClick         → GestureDetector / InkWell
- * Flutter-22  zIndex                     → Stack children 순서로 제어
- * ──────────────────────────────────────────────────────────────
- */
-
 import { useState, useCallback, useRef } from "react";
 import type { CSSProperties } from "react";
 import { ChevronLeft, Check } from "lucide-react";
@@ -34,7 +15,7 @@ const colors = {
   white: "#FFFFFF",
 };
 
-const fontFamily = "'Pretendard', 'Noto Sans KR', sans-serif"; // ⚠️ Flutter-20: GoogleFonts.pretendard() 또는 pubspec.yaml fonts 등록
+const fontFamily = "'Pretendard', 'Noto Sans KR', sans-serif";
 
 // ─── Mock Data ───────────────────────────────────────────────
 interface Notification {
@@ -54,13 +35,12 @@ const NOTIFICATIONS: Notification[] = [
   { id: 6, type: "결제 알림", amount: "7,500", time: "2주 전", initialRead: true },
 ];
 
-// ─── CSS for transitions (injected once) ─────────────────────
-// ⚠️ Flutter-11: CSS class 기반 transition 미지원 → AnimationController + Tween으로 교체
+// ─── CSS for transitions (injected once) ─────────────────
 const TRANSITION_CSS = `
   .notif-dot {
     width: 8px; height: 8px; border-radius: 50%;
     flex-shrink: 0; margin-top: 5px;
-    transition: opacity 0.25s ease, transform 0.25s ease; /* ⚠️ Flutter-12: AnimatedOpacity + AnimatedContainer로 교체 */
+    transition: opacity 0.25s ease, transform 0.25s ease;
   }
   .notif-dot-unread {
     background: #EE2B2F; opacity: 1; transform: scale(1);
@@ -72,14 +52,14 @@ const TRANSITION_CSS = `
     background: transparent; opacity: 0;
   }
   .notif-text-transition {
-    transition: color 0.35s ease; /* ⚠️ Flutter-12: AnimatedDefaultTextStyle로 교체 */
+    transition: color 0.35s ease;
   }
   .notif-row {
-    transition: background 0.08s ease; /* ⚠️ Flutter-17: InkWell splashColor / highlightColor로 교체 */
+    transition: background 0.08s ease;
     -webkit-tap-highlight-color: transparent;
   }
   .notif-row:active {
-    background: #EBEBF0 !important; /* ⚠️ Flutter-17: InkWell highlightColor로 교체 */
+    background: #EBEBF0 !important;
   }
 `;
 
@@ -143,16 +123,12 @@ export default function NotificationPage({ onBack }: NotificationPageProps) {
   return (
     <div style={styles.screen}>
       <style>{TRANSITION_CSS}</style>
-      {/* ⚠️ Flutter-15: <style> 태그 삭제, AnimationController + Tween 사용 */}
       <Toaster position="bottom-center" />
-      {/* ⚠️ Flutter: SnackBar 또는 fluttertoast 패키지로 교체 */}
 
       {/* ── Header ── */}
-      {/* ⚠️ Flutter-18: <div> → Container / Row */}
       <div style={styles.header}>
         <div style={styles.headerInner}>
           <div style={styles.headerLeftGroup}>
-            {/* ⚠️ Flutter-17: <button> onClick → IconButton onPressed */}
             <button onClick={onBack} style={styles.backBtn}>
               <ChevronLeft size={26} strokeWidth={2.2} color={colors.black} />
             </button>
@@ -183,7 +159,6 @@ export default function NotificationPage({ onBack }: NotificationPageProps) {
       </div>
 
       {/* ── Notification List ── */}
-      {/* ⚠️ Flutter-02: <div overflowY> → ListView.builder */}
       <div style={styles.scrollArea}>
         {NOTIFICATIONS.map((item) => {
           const isRead = readSet.has(item.id);
@@ -197,7 +172,6 @@ export default function NotificationPage({ onBack }: NotificationPageProps) {
               onClick={() => markOne(item.id)}
             >
               {/* Dot (left side) */}
-              {/* ⚠️ Flutter-12: className 기반 opacity/transform → AnimatedOpacity + AnimatedContainer */}
               <div
                 className={`notif-dot ${
                   item.initialRead
@@ -209,7 +183,6 @@ export default function NotificationPage({ onBack }: NotificationPageProps) {
               />
 
               {/* Content */}
-              {/* ⚠️ Flutter-18: <div> → Column, <p> → Text */}
               <div style={styles.notificationContent}>
                 <p
                   className="notif-text-transition"
@@ -249,8 +222,8 @@ const styles: Record<string, CSSProperties> = {
     display: "flex",
     flexDirection: "column",
     backgroundColor: colors.bg,
-    fontFamily, // ⚠️ Flutter-20: GoogleFonts.pretendard() 또는 pubspec.yaml 등록
-    zIndex: 100, // ⚠️ Flutter-22: Stack children 순서로 제어 (전체화면이므로 제거 가능)
+    fontFamily,
+    zIndex: 100,
   },
   header: {
     display: "flex",
@@ -260,9 +233,9 @@ const styles: Record<string, CSSProperties> = {
     paddingRight: 16,
     paddingTop: 10,
     paddingBottom: 10,
-    borderBottom: `1px solid ${colors.border}`, // ⚠️ Flutter-04: Border(bottom: BorderSide(color:..., width: 1))로 교체
-    boxShadow: "0 2px 10px rgba(0,0,0,0.06)", // ⚠️ Flutter-05: BoxDecoration(boxShadow:[BoxShadow(...)])로 교체
-    zIndex: 10, // ⚠️ Flutter-22: Stack children 순서로 제어
+    borderBottom: `1px solid ${colors.border}`,
+    boxShadow: "0 2px 10px rgba(0,0,0,0.06)",
+    zIndex: 10,
   },
   headerInner: {
     display: "flex",
@@ -283,8 +256,8 @@ const styles: Record<string, CSSProperties> = {
     alignItems: "center",
     justifyContent: "center",
     background: "none",
-    border: "none", // ⚠️ Flutter-04: Flutter에서 border: none 불필요
-    cursor: "pointer", // ⚠️ Flutter-13: 삭제
+    border: "none",
+    cursor: "pointer",
     padding: 0,
   },
   headerTitle: {
@@ -303,8 +276,8 @@ const styles: Record<string, CSSProperties> = {
     paddingTop: 7,
     paddingBottom: 7,
     borderRadius: 100,
-    border: "none", // ⚠️ Flutter-04: Flutter에서 border: none 불필요
-    cursor: "pointer", // ⚠️ Flutter-13: 삭제
+    border: "none",
+    cursor: "pointer",
   },
   markAllText: {
     fontSize: 10,
@@ -313,7 +286,7 @@ const styles: Record<string, CSSProperties> = {
   },
   scrollArea: {
     flex: 1,
-    overflowY: "auto", // ⚠️ Flutter-02: ListView.builder로 교체
+    overflowY: "auto",
   },
   notificationItem: {
     display: "flex",
@@ -324,9 +297,9 @@ const styles: Record<string, CSSProperties> = {
     paddingRight: 18,
     paddingTop: 15,
     paddingBottom: 15,
-    borderBottom: `1px solid ${colors.border}`, // ⚠️ Flutter-04: Border(bottom: BorderSide(color:..., width: 1))로 교체
+    borderBottom: `1px solid ${colors.border}`,
     backgroundColor: colors.white,
-    cursor: "pointer", // ⚠️ Flutter-13: 삭제 (InkWell 사용)
+    cursor: "pointer",
   },
   notificationContent: {
     flex: 1,
