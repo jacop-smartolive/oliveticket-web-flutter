@@ -116,7 +116,7 @@ export default function QrPaymentPage({ onBack }: QrPaymentPageProps) {
                   justifyContent: "center",
                 }}>
                   <Circle size={68} strokeWidth={1.6} color="#00C853" style={{ position: "absolute" }} />
-                  <Check size={34} strokeWidth={3.2} color="#00C853" />
+                  <Check size={34} strokeWidth={2.5} color="#00C853" />
                 </div>
                 <span style={{ fontSize: 14, fontWeight: 500, color: colors.black, letterSpacing: -0.14 }}>
                   결제완료
@@ -394,8 +394,8 @@ const pageStyles: Record<string, CSSProperties> = {
     position: "relative",
     zIndex: 10,
     backgroundColor: colors.white,
-    borderTopLeftRadius: 15,
-    borderTopRightRadius: 15,
+    borderTopLeftRadius: 12,
+    borderTopRightRadius: 12,
     boxShadow: "0 -1px 8px rgba(163,163,163,0.6)",
     padding: spacing.lg,
     paddingBottom: spacing.xl,
@@ -436,7 +436,6 @@ function generateQrMatrix(seed: number): boolean[][] {
     Array(size).fill(false)
   );
 
-  // Finder patterns (3 corners)
   const drawFinder = (r: number, c: number) => {
     for (let i = 0; i < 7; i++) {
       for (let j = 0; j < 7; j++) {
@@ -450,7 +449,6 @@ function generateQrMatrix(seed: number): boolean[][] {
   drawFinder(0, size - 7);
   drawFinder(size - 7, 0);
 
-  // Separator (white border around finders)
   const clearSep = (r: number, c: number, h: boolean) => {
     for (let i = 0; i < 8; i++) {
       if (h) {
@@ -466,13 +464,11 @@ function generateQrMatrix(seed: number): boolean[][] {
   clearSep(7, size - 8, true); clearSep(0, size - 8, false);
   clearSep(size - 8, 0, true); clearSep(size - 7, 7, false);
 
-  // Timing patterns
   for (let i = 8; i < size - 8; i++) {
     matrix[6][i] = i % 2 === 0;
     matrix[i][6] = i % 2 === 0;
   }
 
-  // Alignment pattern
   const drawAlignment = (r: number, c: number) => {
     for (let i = -2; i <= 2; i++) {
       for (let j = -2; j <= 2; j++) {
@@ -484,7 +480,6 @@ function generateQrMatrix(seed: number): boolean[][] {
   };
   drawAlignment(size - 9, size - 9);
 
-  // Data area - pseudo-random fill
   let rng = seed;
   const nextRng = () => {
     rng = (rng * 1103515245 + 12345) & 0x7fffffff;
@@ -511,8 +506,8 @@ function generateQrMatrix(seed: number): boolean[][] {
 function QrCodeSvg({ size = 160, seed = 42 }: { size?: number; seed?: number }) {
   const matrix = useMemo(() => generateQrMatrix(seed), [seed]);
   const moduleCount = matrix.length;
-  const moduleSize = size / (moduleCount + 2); // +2 for quiet zone
-  const offset = moduleSize; // quiet zone
+  const moduleSize = size / (moduleCount + 2);
+  const offset = moduleSize;
 
   return (
     <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
@@ -563,7 +558,6 @@ function PaymentCompletePopup({ onClose, onAdditionalPay }: { onClose: () => voi
         }}
         onClick={(e) => e.stopPropagation()}
       >
-        {/* ── Header ── */}
         <div style={popupStyles.sheetHeader}>
           <span style={popupStyles.sheetTitle}>결제완료</span>
           <button onClick={handleClose} style={popupStyles.closeBtn}>
@@ -571,7 +565,6 @@ function PaymentCompletePopup({ onClose, onAdditionalPay }: { onClose: () => voi
           </button>
         </div>
 
-        {/* ── Amount Row ── */}
         <div style={popupStyles.amountRow}>
           <span style={popupStyles.amountValue}>4,700</span>
           <button onClick={() => {
@@ -585,7 +578,6 @@ function PaymentCompletePopup({ onClose, onAdditionalPay }: { onClose: () => voi
           </button>
         </div>
 
-        {/* ── Detail Rows ── */}
         <div style={popupStyles.detailSection}>
           <div style={popupStyles.detailRow}>
             <span style={popupStyles.detailLabel}>결제일시</span>
@@ -601,7 +593,6 @@ function PaymentCompletePopup({ onClose, onAdditionalPay }: { onClose: () => voi
           </div>
         </div>
 
-        {/* ── Event Banner ── */}
         <div style={popupStyles.bannerWrap}>
           <img src={img} alt="event banner" style={popupStyles.bannerImg} />
           <div style={popupStyles.bannerOverlay}>
@@ -615,7 +606,6 @@ function PaymentCompletePopup({ onClose, onAdditionalPay }: { onClose: () => voi
   );
 }
 
-// ─── Payment Complete Popup Styles ───────────────────────────────────────
 const popupStyles: Record<string, CSSProperties> = {
   overlay: {
     position: "absolute",
@@ -631,8 +621,8 @@ const popupStyles: Record<string, CSSProperties> = {
   },
   sheet: {
     backgroundColor: colors.white,
-    borderTopLeftRadius: 23,
-    borderTopRightRadius: 23,
+    borderTopLeftRadius: 12,
+    borderTopRightRadius: 12,
     paddingTop: 24,
     paddingLeft: spacing.xl + 2,
     paddingRight: spacing.xl + 2,
