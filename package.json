@@ -1,0 +1,21 @@
+{
+  "name": "oliveticket-flutter-web",
+  "private": true,
+  "version": "0.1.0",
+  "description": "올리브식권 - Figma Make 웹 디자인 (Flutter 변환 참조용)",
+  "type": "module",
+  "scripts": {
+    "build": "vite build"
+  },
+  "dependencies": {
+    "lucide-react": "0.487.0",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "sonner": "2.0.3"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "4.7.0",
+    "tailwindcss": "4.1.12",
+    "vite": "6.3.5"
+  }
+}
